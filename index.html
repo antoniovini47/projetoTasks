@@ -1,0 +1,59 @@
+<html>
+
+<head>
+    <title>Tasks</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <h1>Tasks</h1>
+    <p>Sua lista perfeitamente organizada!!!</p>
+    <div class="container">
+        <div class="task-input">
+            <input class=" task-input" type="text" id="task" placeholder="Nome da tarefa...">
+            <input class="task-input" type="date" id="date">
+            <button class="task-input" onclick="addTask()">Adicionar Tarefa</button>
+        </div>
+        <div class="task-list" id="taskList">
+            <!-- As tarefas adicionadas aparecerão aqui -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchTasks() {
+            const response = await fetch('http://localhost:3000/tasks');
+            const tasks = await response.json();
+            const taskList = document.getElementById('taskList');
+            tasks.forEach(task => {
+                var entry = document.createElement('li');
+                entry.appendChild(document.createTextNode(`Tarefa: ${task.task}, Data: ${task.date}`));
+                taskList.appendChild(entry);
+            });
+        }
+
+        async function addTask() {
+            var task = document.getElementById('task').value;
+            var date = document.getElementById('date').value;
+            if (task === '' || date === '') {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            const response = await fetch('http://localhost:3000/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ task, date }),
+            });
+            const newTask = await response.json();
+            var taskList = document.getElementById('taskList');
+            var entry = document.createElement('li');
+            entry.appendChild(document.createTextNode(`Tarefa: ${newTask.task}, Data: ${newTask.date}`));
+            taskList.appendChild(entry);
+        }
+
+        fetchTasks();
+    </script>
+</body>
+
+</html>
